@@ -25,15 +25,20 @@ int main()
 {
 	std::string input;
 	std::getline(std::cin, input);
-	std::map<char, size_t> collect;
+	std::map<char, int> collect;
 	std::list<char> ans;
+	bool can = false;
 	
 	for (char i : input)
 	{
 	    if (i > 47 && i < 58)
 	    {
 	    	if (collect.find(i) != collect.end())
-	    		collect[i]++;
+	    	{
+			    collect[i]++;
+			    if (i != '0')
+			    	can = true;
+	    	}
 		    else
 		    	collect.insert({i, 1});
 	    }
@@ -42,22 +47,24 @@ int main()
 	auto it_ans = ans.begin();
 	auto it_collect = collect.begin();
 	
-	auto place = [&ans, &it_ans](std::map<char, size_t>::iterator it_collect)
+	auto place = [&ans, &it_ans](std::map<char, int>::iterator it_collect)
 	{
 		ans.insert(it_ans, (it_collect->first));
 		--it_ans;
 		ans.insert(it_ans, (it_collect->first));
 	};
 	
-	if ((*collect.begin()).first == '0')
+	if (collect.begin()->first == '0')
 	{
-		if (collect.size() == 1 || std::next(it_collect)->second == 1)
+		if (collect.size() == 1 || !can)
 		{
 			putchar('0');
 			return 0;
 		}
-		place(std::next(collect.begin()));
-		std::next(collect.begin())->second -= 2;
+		auto iter = std::next(collect.begin());
+		while (iter->second == 1) ++iter;
+		place(iter);
+		iter->second -= 2;
 	}
 	
 	while (!collect.empty())
