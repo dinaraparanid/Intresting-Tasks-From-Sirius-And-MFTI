@@ -18,10 +18,12 @@ int _empty(const _deque* x){
 }
 
 int _front(const _deque* x){
+	assert(x->size > 0);
 	return *x->container;
 }
 
 int _back(const _deque* x){
+	assert(x->size > 0);
 	return x->container[x->size - 1];
 }
 
@@ -48,7 +50,6 @@ int _pop_back(_deque *x)
 	const int res = x->container[x->size - 1];
 	
 	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
-	assert(x->container != NULL);
 	return res;
 }
 
@@ -74,7 +75,6 @@ int _pop_front(_deque *x)
 	}
 	
 	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
-	assert(x->container != NULL);
 	return res;
 }
 
@@ -106,7 +106,6 @@ int _erase(_deque* x, const size_t index)
 	}
 	
 	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
-	assert(x->container != NULL);
 	return res;
 }
 
