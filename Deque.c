@@ -9,24 +9,26 @@ typedef struct deque
 	size_t size;
 } deque;
 
-inline size_t size(const deque* x)
-{
+inline size_t size(const deque* x){
 	return x->size;
 }
 
-inline int empty(const deque* x)
-{
+inline int empty(const deque* x){
 	return x->size == 0;
 }
 
-inline int front(const deque* x)
-{
+inline int front(const deque* x){
 	return *x->container;
 }
 
-inline int back(const deque* x)
-{
+inline int back(const deque* x){
 	return x->container[x->size - 1];
+}
+
+inline int get(const deque* x, const int index)
+{
+	assert(index < x->size);
+	return x->container[index];
 }
 
 void push_back(deque *x, const int value)
