@@ -1,105 +1,103 @@
 // Реализация дека на C
 
 #include <stdio.h>
-#include <string.h>
 #include <malloc.h>
+#include <assert.h>
 
-struct deque
+typedef struct deque
 {
-	int* d;
+	int* container;
 	size_t size;
-};
+} deque;
 
-void push_back(struct deque *x, int value)
+inline size_t size(const deque* x)
 {
-	(*x).size++;
-	(*x).d = (int*)realloc((*x).d, (*x).size * sizeof(int));
-	(*x).d[(*x).size - 1] = value;
+	return x->size;
 }
 
-void pop_back(struct deque *x)
+inline int empty(const deque* x)
 {
-	if((*x).size == 0)
-	{
-		puts("error");
-		return;
-	}
-	printf("%d\n",(*x).d[(*x).size - 1]);
-	(*x).size--;
-	(*x).d = (int*)realloc((*x).d, (*x).size * sizeof(int));
+	return x->size == 0;
 }
 
-void push_front(struct deque *x, int value)
+inline void swap(int* a, int* b)
 {
-	(*x).size++;
-	(*x).d = (int*)realloc((*x).d, (*x).size * sizeof(int));
-	(*x).d[(*x).size - 1] = value;
-	for(unsigned int i = (*x).size - 1; i > 0; i--)
-	{
-		(*x).d[i] += (*x).d[i - 1];
-		(*x).d[i - 1] = (*x).d[i] - (*x).d[i - 1];
-		(*x).d[i] -= (*x).d[i - 1];
-	}
+	*a += *b;
+	*b = *a - *b;
+	*a -= *b;
 }
 
-void pop_front(struct deque *x)
+void push_back(deque *x, const int value)
 {
-	if((*x).size == 0)
-	{
-		puts("error");
-		return;
-	}
-	printf("%d\n",*((*x).d));
-	for(int i = 0; i < (*x).size - 1; i++)
-	{
-		(*x).d[i] += (*x).d[i + 1];
-		(*x).d[i + 1] = (*x).d[i] - (*x).d[i + 1];
-		(*x).d[i] -= (*x).d[i + 1];
-	}
-	(*x).size--;
-	(*x).d = (int*)realloc((*x).d, (*x).size * sizeof(int));
+	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
+	x->container[x->size - 1] = value;
 }
 
-void clear(struct deque *x)
+int pop_back(deque *x)
 {
-	(*x).size = 0;
-	(*x).d = (int*)realloc((*x).d, 0);
+	assert(x->size > 0);
+	const int res = x->container[x->size - 1];
+	
+	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
+	return res;
 }
 
-int main()
+void push_front(deque *x, const int value)
 {
-	struct deque s;
-	s.size = 0;
-	s.d = (int*)malloc(0);
-	char command[100];
-	do
-	{
-		scanf("%s", command);
-		if(strcmp(command, "exit") == 0) puts("bye");
-		else if(strcmp(command, "clear") == 0) clear(&s), puts("ok");
-		else if(strcmp(command, "size") == 0) printf("%u\n", s.size);
-		else if(strcmp(command, "front") == 0)
-			(s).size == 0 ? puts ( "error" ) : printf ( "%d\n", *(s.d) );
-		else if(strcmp(command, "back") == 0)
-			(s).size == 0 ? puts ( "error" ) : printf("%d\n", s.d[s.size - 1]);
-		else if(strcmp(command, "push_back") == 0)
-		{
-			int n = 0;
-			scanf("%d", &n);
-			push_back(&s, n);
-			puts("ok");
-		}
-		else if(strcmp(command, "push_front") == 0)
-		{
-			int n = 0;
-			scanf("%d", &n);
-			push_front(&s, n);
-			puts("ok");
-		}
-		else if(strcmp(command, "pop_back") == 0) pop_back(&s);
-		else pop_front(&s);
-	}
-	while(strcmp(command, "exit") != 0);
-	free(s.d);
-	return 0;
+	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
+	x->container[x->size - 1] = value;
+	
+	for (size_t i = x->size - 1; i > 0; i--)
+		swap(&x->container[i], &x->container[i - 1]);
+}
+
+int pop_front(deque *x)
+{
+	assert(x->size > 0);
+	const int res = *(x->container);
+	
+	for (size_t i = 0; i < x->size - 1; i++)
+		swap(&x->container[i], &x->container[i + 1]);
+	
+	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
+	return res;
+}
+
+void clear(deque *x)
+{
+	x->size = 0;
+	x->container = (int*)realloc(x->container, 0);
+}
+
+void insert(deque *x, const size_t index, const int value)
+{
+	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
+	x->container[x->size - 1] = value;
+	
+	for (size_t i = x->size - 1; i > index; i--)
+		swap(&x->container[i], &x->container[i - 1]);
+}
+
+int erase(deque* x, const size_t index)
+{
+	assert(x->size > index);
+	const int res = x->container[index];
+	
+	for (int i = index; i < x->size; i++)
+		swap(&x->container[i], &x->container[i + 1]);
+	
+	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
+	return res;
+}
+
+void resize(deque* x, const size_t new_size, const int value)
+{
+	if (new_size == x->size) return;
+	x->container = (int*)realloc(x->container, new_size * sizeof(int));
+	
+	if (new_size > x->size)
+		for (size_t i = x->size; i < new_size; i++)
+			x->container[i] = value;
+	
+	x->size = new_size;
 }
