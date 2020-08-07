@@ -38,6 +38,7 @@ inline int back(const deque* x)
 void push_back(deque *x, const int value)
 {
 	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
+	assert(x->container != NULL);
 	x->container[x->size - 1] = value;
 }
 
@@ -47,12 +48,14 @@ int pop_back(deque *x)
 	const int res = x->container[x->size - 1];
 	
 	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
+	assert(x->container != NULL);
 	return res;
 }
 
 void push_front(deque *x, const int value)
 {
 	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
+	assert(x->container != NULL);
 	x->container[x->size - 1] = value;
 	
 	for (size_t i = x->size - 1; i > 0; i--)
@@ -68,6 +71,7 @@ int pop_front(deque *x)
 		swap(&x->container[i], &x->container[i + 1]);
 	
 	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
+	assert(x->container != NULL);
 	return res;
 }
 
@@ -75,11 +79,13 @@ void clear(deque *x)
 {
 	x->size = 0;
 	x->container = (int*)realloc(x->container, 0);
+	assert(x->container != NULL);
 }
 
 void insert(deque *x, const size_t index, const int value)
 {
 	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
+	assert(x->container != NULL);
 	x->container[x->size - 1] = value;
 	
 	for (size_t i = x->size - 1; i > index; i--)
@@ -95,6 +101,7 @@ int erase(deque* x, const size_t index)
 		swap(&x->container[i], &x->container[i + 1]);
 	
 	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
+	assert(x->container != NULL);
 	return res;
 }
 
@@ -102,6 +109,7 @@ void resize(deque* x, const size_t new_size, const int value)
 {
 	if (new_size == x->size) return;
 	x->container = (int*)realloc(x->container, new_size * sizeof(int));
+	assert(x->container != NULL);
 	
 	if (new_size > x->size)
 		for (size_t i = x->size; i < new_size; i++)
