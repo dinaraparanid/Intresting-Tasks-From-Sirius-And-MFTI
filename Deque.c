@@ -1,5 +1,3 @@
-// Реализация дека на C
-
 #include <stdio.h>
 #include <malloc.h>
 #include <assert.h>
@@ -25,6 +23,16 @@ inline void swap(int* a, int* b)
 	*a += *b;
 	*b = *a - *b;
 	*a -= *b;
+}
+
+inline int front(const deque* x)
+{
+	return *x->container;
+}
+
+inline int back(const deque* x)
+{
+	return x->container[x->size - 1];
 }
 
 void push_back(deque *x, const int value)
