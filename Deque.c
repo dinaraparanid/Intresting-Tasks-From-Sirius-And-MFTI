@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <assert.h>
+#define SWAP(A, B) A += B; B = A - B; A -= B
 
 typedef struct deque
 {
@@ -16,13 +17,6 @@ inline size_t size(const deque* x)
 inline int empty(const deque* x)
 {
 	return x->size == 0;
-}
-
-inline void swap(int* a, int* b)
-{
-	*a += *b;
-	*b = *a - *b;
-	*a -= *b;
 }
 
 inline int front(const deque* x)
@@ -58,8 +52,10 @@ void push_front(deque *x, const int value)
 	assert(x->container != NULL);
 	x->container[x->size - 1] = value;
 	
-	for (size_t i = x->size - 1; i > 0; i--)
-		swap(&x->container[i], &x->container[i - 1]);
+	for (size_t i = x->size - 1; i > 0; i--){
+		SWAP(x->container[i], x->container[i - 1]);
+	}
+	
 }
 
 int pop_front(deque *x)
@@ -67,8 +63,9 @@ int pop_front(deque *x)
 	assert(x->size > 0);
 	const int res = *(x->container);
 	
-	for (size_t i = 0; i < x->size - 1; i++)
-		swap(&x->container[i], &x->container[i + 1]);
+	for (size_t i = 0; i < x->size - 1; i++){
+		SWAP(x->container[i], x->container[i + 1]);
+	}
 	
 	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
 	assert(x->container != NULL);
@@ -88,8 +85,9 @@ void insert(deque *x, const size_t index, const int value)
 	assert(x->container != NULL);
 	x->container[x->size - 1] = value;
 	
-	for (size_t i = x->size - 1; i > index; i--)
-		swap(&x->container[i], &x->container[i - 1]);
+	for (size_t i = x->size - 1; i > index; i--){
+		SWAP(x->container[i], x->container[i - 1]);
+	}
 }
 
 int erase(deque* x, const size_t index)
@@ -97,8 +95,9 @@ int erase(deque* x, const size_t index)
 	assert(x->size > index);
 	const int res = x->container[index];
 	
-	for (int i = index; i < x->size; i++)
-		swap(&x->container[i], &x->container[i + 1]);
+	for (int i = index; i < x->size; i++){
+		SWAP(x->container[i], x->container[i + 1]);
+	}
 	
 	x->container = (int*)realloc(x->container, --x->size * sizeof(int));
 	assert(x->container != NULL);
