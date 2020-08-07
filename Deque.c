@@ -3,42 +3,46 @@
 #include <assert.h>
 #define SWAP(A, B) A += B; B = A - B; A -= B
 
-typedef struct deque
+typedef struct _deque
 {
 	int* container;
 	size_t size;
-} deque;
+} _deque;
 
-inline size_t size(const deque* x){
+size_t _size(const _deque* x){
 	return x->size;
 }
 
-inline int empty(const deque* x){
+int _empty(const _deque* x){
 	return x->size == 0;
 }
 
-inline int front(const deque* x){
+int _front(const _deque* x){
 	return *x->container;
 }
 
-inline int back(const deque* x){
+int _back(const _deque* x){
 	return x->container[x->size - 1];
 }
 
-inline int get(const deque* x, const int index)
+void _free(_deque* x){
+	free(x->container);
+}
+
+int _get(const _deque* x, const int index)
 {
 	assert(index < x->size);
 	return x->container[index];
 }
 
-void push_back(deque *x, const int value)
+void _push_back(_deque *x, const int value)
 {
 	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
 	assert(x->container != NULL);
 	x->container[x->size - 1] = value;
 }
 
-int pop_back(deque *x)
+int _pop_back(_deque *x)
 {
 	assert(x->size > 0);
 	const int res = x->container[x->size - 1];
@@ -48,7 +52,7 @@ int pop_back(deque *x)
 	return res;
 }
 
-void push_front(deque *x, const int value)
+void _push_front(_deque *x, const int value)
 {
 	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
 	assert(x->container != NULL);
@@ -60,7 +64,7 @@ void push_front(deque *x, const int value)
 	
 }
 
-int pop_front(deque *x)
+int _pop_front(_deque *x)
 {
 	assert(x->size > 0);
 	const int res = *(x->container);
@@ -74,14 +78,14 @@ int pop_front(deque *x)
 	return res;
 }
 
-void clear(deque *x)
+void _clear(_deque *x)
 {
 	x->size = 0;
 	x->container = (int*)realloc(x->container, 0);
 	assert(x->container != NULL);
 }
 
-void insert(deque *x, const size_t index, const int value)
+void _insert(_deque *x, const size_t index, const int value)
 {
 	x->container = (int*)realloc(x->container, ++x->size * sizeof(int));
 	assert(x->container != NULL);
@@ -92,7 +96,7 @@ void insert(deque *x, const size_t index, const int value)
 	}
 }
 
-int erase(deque* x, const size_t index)
+int _erase(_deque* x, const size_t index)
 {
 	assert(x->size > index);
 	const int res = x->container[index];
@@ -106,7 +110,7 @@ int erase(deque* x, const size_t index)
 	return res;
 }
 
-void resize(deque* x, const size_t new_size, const int value)
+void _resize(_deque* x, const size_t new_size, const int value)
 {
 	if (new_size == x->size) return;
 	x->container = (int*)realloc(x->container, new_size * sizeof(int));
