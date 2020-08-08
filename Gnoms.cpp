@@ -43,10 +43,10 @@ int main()
 	for (int i = 0; i < n; i++)
 		std::get<2>(pgnom[i]) = i + 1;
 	
-	for (auto& i : pgnom)
+	for (tup& i : pgnom)
 		std::scanf("%d", &std::get<0>(i));
 	
-	for (auto& i : pgnom)
+	for (tup& i : pgnom)
 		std::scanf("%d", &std::get<1>(i));
 	
 	std::sort(pgnom.rbegin(), pgnom.rend(), cmp);
@@ -64,7 +64,7 @@ int main()
 			min_dead = std::get<1>(pgnom[i]);
 	}
 	
-	for (auto i : pgnom)
+	for (tup i : pgnom)
 		std::printf("%d ", std::get<2>(i));
 	return 0;
 }
