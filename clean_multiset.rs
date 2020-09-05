@@ -20,6 +20,11 @@ fn erase(mut vector: &mut [i32], count: &mut u128) {
     for elem in &vector {
         *elem -= min;
     }
+    
+    count += 1;
+    
+    erase(&vector[0..ind]);
+    erase(&vector[ind..]);
 }
 
 fn main() {
@@ -34,14 +39,11 @@ fn main() {
     
     let mut input = input.split_whitespace();
     
-    for _i in 0..n {
-        let num = input.next().unwrap().parse::<i32>().unwrap();
-        vector.push(num);
-    }
+    let mut vector = input.map(|x| x.parse::<i32>().unwrap()).collect::<Vec<i32>>();
     
     let mut count: u128 = 0;
     
-    while !map.is_emty() {
+    erase(&mut vector, count);
     
-    }
+    println!("{}", count);
 }
