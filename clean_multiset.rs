@@ -17,7 +17,7 @@ fn erase(mut vector: &mut [i32], count: &mut u128) {
         }
     }
         
-    for elem in &vector {
+    for elem in vector {
         *elem -= min;
     }
     
