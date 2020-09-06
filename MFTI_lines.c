@@ -26,7 +26,6 @@ N
 0 2
 1 3
 2 2
-
 no
 
 
@@ -67,8 +66,8 @@ int compare(const void* a, const void* b)
 
 void fill(dot* pn, const int* n, dot* first_line, size_t* first_size, dot* second_line, size_t* second_size, const size_t* index)
 {
-	int minus_first = first_line[1].first - first_line->first;
-	int minus_second = first_line[1].second - first_line->second;
+	const int minus_first = first_line[1].first - first_line->first;
+	const int minus_second = first_line[1].second - first_line->second;
 	
 	for (int i = *index; i < *n; i++)
 	{
@@ -90,8 +89,8 @@ void fill(dot* pn, const int* n, dot* first_line, size_t* first_size, dot* secon
 bool check(const dot* second_line, const size_t* second_size)
 {
 	bool correct = true;
-	int minus_first = second_line[1].first - second_line->first;
-	int minus_second = second_line[1].second - second_line->second;
+	const int minus_first = second_line[1].first - second_line->first;
+	const int minus_second = second_line[1].second - second_line->second;
 	
 	for (int i = 3; i < *second_size; i++)
 	{
