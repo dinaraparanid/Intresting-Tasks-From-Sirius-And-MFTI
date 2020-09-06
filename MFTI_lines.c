@@ -96,7 +96,7 @@ bool check(const dot* second_line, const size_t* second_size)
 	for (int i = 3; i < *second_size; i++)
 	{
 		if (second_line[i].first - second_line[i - 1].first != minus_first
-				|| second_line[i].second - second_line[i - 1].second != minus_second)
+		|| second_line[i].second - second_line[i - 1].second != minus_second)
 		{
 			correct = false;
 			break;
