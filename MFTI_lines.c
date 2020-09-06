@@ -64,7 +64,7 @@ int compare(const void* a, const void* b)
 	return 0;
 }
 
-void fill(dot* pn, const int* n, dot* first_line, size_t* first_size, dot* second_line, size_t* second_size, const size_t* index)
+void fill(const dot* pn, const int* n, dot* first_line, size_t* first_size, dot* second_line, size_t* second_size, const size_t* index)
 {
 	const int minus_first = first_line[1].first - first_line->first;
 	const int minus_second = first_line[1].second - first_line->second;
