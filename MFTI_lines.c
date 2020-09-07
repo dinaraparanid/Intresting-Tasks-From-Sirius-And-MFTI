@@ -156,7 +156,7 @@ int main()
 			else
 			{
 				puts("no");
-				free(second_line2);
+				free(second_line3);
 				goto END;
 			}
 		}
