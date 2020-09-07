@@ -74,13 +74,23 @@ void fill(const dot* pn, const int* n, dot* first_line, size_t* first_size, dot*
 		if (pn[i].first - first_line[*first_size - 1].first != minus_first
 		|| pn[i].second - first_line[*first_size - 1].second != minus_second)
 		{
-			second_line = (dot*)realloc(second_line, ++*second_size * sizeof(dot));
+			dot* temp = (dot*)realloc(second_line, ++*second_size * sizeof(dot));
+			if (temp != second_line)
+			{
+				free(second_line);
+				second_line = temp;
+			}
 			second_line[*second_size - 1] = pn[i];
 		}
 		
 		else
 		{
-			first_line = (dot*)realloc(first_line, ++*first_size * sizeof(dot));
+			dot* temp = (dot*)realloc(first_line, ++*first_size * sizeof(dot));
+			if (temp != first_line)
+			{
+				free(first_line);
+				first_line = temp;
+			}
 			first_line[*first_size - 1] = pn[i];
 		}
 	}
@@ -142,9 +152,21 @@ int main()
 		
 		else
 		{
-			first_size = 2, second_size = 0;
-			first_line = (dot*)realloc(first_line, 2 * sizeof(dot));
-			second_line = (dot*)realloc(second_line, 1 * sizeof(dot));
+			first_size = 2, second_size = 1;
+			
+			dot* temp1 = (dot*)realloc(first_line, 2 * sizeof(dot));
+			if (temp1 != first_line)
+			{
+				free(first_line);
+				first_line = temp1;
+			}
+			
+			dot* temp2 = (dot*)realloc(second_line, 1 * sizeof(dot));
+			if (temp2 != second_line)
+			{
+				free(second_line);
+				second_line = temp2;
+			}
 			
 			*first_line = *pn;
 			first_line[1] = pn[2];
@@ -170,8 +192,20 @@ int main()
 				else
 				{
 					first_size = 2, second_size = 0;
-					first_line = (dot*)realloc(first_line, 2 * sizeof(dot));
-					second_line = (dot*)realloc(second_line, 1 * sizeof(dot));
+					
+					dot* temp3 = (dot*)realloc(first_line, 2 * sizeof(dot));
+					if (temp3 != first_line)
+					{
+						free(first_line);
+						first_line = temp3;
+					}
+					
+					dot* temp4 = (dot*)realloc(second_line, 1 * sizeof(dot));
+					if (temp4 != second_line)
+					{
+						free(second_line);
+						second_line = temp4;
+					}
 					
 					*first_line = pn[1];
 					first_line[1] = pn[2];
@@ -206,4 +240,4 @@ int main()
 	
 END:free(pn); free(first_line); free(second_line);
 	return 0;
-} 
+}
