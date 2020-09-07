@@ -42,76 +42,28 @@ yes
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include <malloc.h>
 
 typedef struct dot
 {
-	int first;
-	int second;
+	long first;
+	long second;
 } dot;
 
-int compare(const void* a, const void* b)
+int k (const dot a, const dot b, const dot checkable)
 {
-	const dot arg1 = *(const dot*)a;
-	const dot arg2 = *(const dot*)b;
-	
-	if (arg1.first < arg2.first) return -1;
-	if (arg1.first > arg2.first) return 1;
-	
-	if (arg1.second < arg2.second) return -1;
-	if (arg1.second > arg2.second) return 1;
-	return 0;
+	// (x1−x2)(y3−y2)=(x3−x2)(y1−y2)
+	return (a.first - b.first) * (checkable.second - b.second) == (checkable.first - b.first) * (a.second - b.second) ? 1 : 0;
 }
 
-void fill(const dot* pn, const int* n, dot* first_line, size_t* first_size, dot* second_line, size_t* second_size, const size_t* index)
+int check(const dot* pn, const size_t n)
 {
-	const int minus_first = first_line[1].first - first_line->first;
-	const int minus_second = first_line[1].second - first_line->second;
 	
-	for (int i = *index; i < *n; i++)
-	{
-		if (pn[i].first - first_line[*first_size - 1].first != minus_first
-		|| pn[i].second - first_line[*first_size - 1].second != minus_second)
-		{
-			dot* temp = (dot*)realloc(second_line, ++*second_size * sizeof(dot));
-			if (temp != second_line)
-			{
-				free(second_line);
-				second_line = temp;
-			}
-			second_line[*second_size - 1] = pn[i];
-		}
+	for (int i = 2; i < n; i++)
+		if (!k(pn[i], *pn, pn[1]))
+			return 0;
 		
-		else
-		{
-			dot* temp = (dot*)realloc(first_line, ++*first_size * sizeof(dot));
-			if (temp != first_line)
-			{
-				free(first_line);
-				first_line = temp;
-			}
-			first_line[*first_size - 1] = pn[i];
-		}
-	}
-}
-
-bool check(const dot* second_line, const size_t* second_size)
-{
-	bool correct = true;
-	const int minus_first = second_line[1].first - second_line->first;
-	const int minus_second = second_line[1].second - second_line->second;
-	
-	for (int i = 3; i < *second_size; i++)
-	{
-		if (second_line[i].first - second_line[i - 1].first != minus_first
-		|| second_line[i].second - second_line[i - 1].second != minus_second)
-		{
-			correct = false;
-			break;
-		}
-	}
-	return correct;
+	return 1;
 }
 
 int main()
@@ -119,125 +71,97 @@ int main()
 	int n = 0;
 	scanf("%d", &n);
 	
-	dot* pn = (dot*)malloc(n * sizeof(int));
+	dot* pn = (dot*)malloc(n * sizeof(dot));
 	
 	for (int i = 0; i < n; i++)
-		scanf("%d%d", &pn[i].first, &pn[i].second);
+		scanf("%ld%ld", &pn[i].first, &pn[i].second);
 	
-	qsort(pn, n, sizeof(dot), compare);
+	dot* second_line1 = (dot*)malloc(1 * sizeof(dot));
+	size_t second_size = 0;
 	
-	dot* first_line = (dot*)malloc(2 * sizeof(dot));
-	dot* second_line = (dot*)malloc(0);
-	size_t first_size = 2, second_size = 0;
+	size_t wrong = 0;
 	
-	*first_line = *pn;
-	first_line[1] = pn[1];
+	for (int i = 2; i < n; i++)
+	{
+		if (!k(*pn, pn[1], pn[i]))
+		{
+			wrong = i;
+			second_line1 = (dot*)realloc(second_line1, ++second_size * sizeof(dot));
+			second_line1[second_size - 1] = pn[i];
+		}
+	}
 	
-	const size_t index = 2;
-	fill(pn, &n, first_line, &first_size, second_line, &second_size, &index);
-	
-	if (second_size <= 2)
+	if (second_size <= 2 || check(second_line1, second_size))
 	{
 		puts("yes");
+		free(second_line1);
 		goto END;
 	}
 	
 	else
 	{
-		if (check(second_line, &second_size))
+		free(second_line1);
+		second_size = 0;
+		
+		dot* second_line2 = (dot*)malloc(1 * sizeof(dot));
+		size_t wrong2 = 0;
+		
+		for (int i = 1; i < n; i++)
+		{
+			if (i == wrong)
+				continue;
+			
+			if (!k(*pn, pn[wrong], pn[i]))
+			{
+				wrong2 = i;
+				second_line2 = (dot*)realloc(second_line2, ++second_size * sizeof(dot));
+				second_line2[second_size - 1] = pn[i];
+			}
+		}
+		
+		if (second_size <= 2 || check(second_line2, second_size))
 		{
 			puts("yes");
+			free(second_line2);
 			goto END;
 		}
 		
 		else
 		{
-			first_size = 2, second_size = 1;
+			free(second_line2);
+			second_size = 0;
 			
-			dot* temp1 = (dot*)realloc(first_line, 2 * sizeof(dot));
-			if (temp1 != first_line)
+			dot* second_line3 = (dot*)malloc(1 * sizeof(dot));
+			*second_line3 = *pn;
+			
+			for (int i = 1; i < n; i++)
 			{
-				free(first_line);
-				first_line = temp1;
+				if (i == wrong2)
+					continue;
+				
+				if (!k(*pn, pn[wrong2], pn[i]))
+				{
+					second_line3 = (dot*)realloc(second_line3, ++second_size * sizeof(dot));
+					second_line3[second_size - 1] = pn[i];
+				}
 			}
 			
-			dot* temp2 = (dot*)realloc(second_line, 1 * sizeof(dot));
-			if (temp2 != second_line)
-			{
-				free(second_line);
-				second_line = temp2;
-			}
-			
-			*first_line = *pn;
-			first_line[1] = pn[2];
-			*second_line = pn[1];
-			
-			const size_t index2 = 3;
-			fill(pn, &n, first_line, &first_size, second_line, &second_size, &index2);
-			
-			if (second_size <= 2)
+			if (second_size <= 2 || check(second_line3, second_size))
 			{
 				puts("yes");
+				free(second_line3);
 				goto END;
 			}
 			
 			else
 			{
-				if (check(second_line, &second_size))
-				{
-					puts("yes");
-					goto END;
-				}
-				
-				else
-				{
-					first_size = 2, second_size = 0;
-					
-					dot* temp3 = (dot*)realloc(first_line, 2 * sizeof(dot));
-					if (temp3 != first_line)
-					{
-						free(first_line);
-						first_line = temp3;
-					}
-					
-					dot* temp4 = (dot*)realloc(second_line, 1 * sizeof(dot));
-					if (temp4 != second_line)
-					{
-						free(second_line);
-						second_line = temp4;
-					}
-					
-					*first_line = pn[1];
-					first_line[1] = pn[2];
-					*second_line = *pn;
-					
-					fill(pn, &n, first_line, &first_size, second_line, &second_size, &index2);
-					
-					if (second_size <= 2)
-					{
-						puts("yes");
-						goto END;
-					}
-					
-					else
-					{
-						if (check(second_line, &second_size))
-						{
-							puts("yes");
-							goto END;
-						}
-						
-						else
-						{
-							puts("no");
-							goto END;
-						}
-					}
-				}
+				puts("no");
+				free(second_line2);
+				goto END;
 			}
 		}
 	}
 	
-END:free(pn); free(first_line); free(second_line);
+END:free(pn);
 	return 0;
 }
