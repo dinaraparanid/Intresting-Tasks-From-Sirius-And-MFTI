@@ -58,7 +58,6 @@ int k (const dot a, const dot b, const dot checkable)
 
 int check(const dot* pn, const size_t n)
 {
-	
 	for (int i = 2; i < n; i++)
 		if (!k(pn[i], *pn, pn[1]))
 			return 0;
