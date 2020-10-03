@@ -42,7 +42,7 @@ NO
 #include <string.h>
 #include <stdbool.h>
 
-__forceinline bool check (const char* _Mask, size_t _MSize, const char* _String, size_t _StrSize)
+extern inline bool check (const char* _Mask, size_t _MSize, const char* _String, size_t _StrSize)
 {
 	int mi = 0, stri = 0, starStop = 0;
 
