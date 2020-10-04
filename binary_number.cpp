@@ -36,7 +36,7 @@ extern inline std::deque<int> toTwo (int num)
 
 int main()
 {
-	int a = 1, b = 0;    // test 2 a == 2 b == 4
+	int a = 1, b = 0; 
 	std::scanf("%d%d", &a, &b);
 
 	if (b < 3 || a > b)
