@@ -1,105 +1,145 @@
+/*С целью уменьшения нагрузки на станции метро в столице Байтландии в часы пик мэрия 
+приняла решение об изменении сети наземных маршрутов. Эксперимент проводился на
+одной линии метро, соединяющей n станций. Станции занумерованы последовательными
+целыми числами от 1 до n.
+Также проводились наблюдения относительно значений максимального и суммарного 
+пассажиропотока на участках. В рамках этих наблюдений отмечались следующие события:
+
+o x,y,t — для станций с номерами от x до y значение пассажиропотока ai после 
+модификации наземных маршрутов стало равным min(ai,t).
+
+m x,y — требуется найти максимальный пассажиропоток на станциях с номерами от x до y включительно.
+
+s x,y — требуется найти суммарный пассажиропоток (то есть сумму всех ai) на 
+станциях с номерами от x до y включительно.
+Ваша задача — написать программу, обрабатывающие эти события в хронологическом порядке.
+
+Пример
+Ввод	Вывод
+1 - кол-во тестов
+5 5
+2 3 4 5 6
+m 1 5
+s 1 5
+o 3 5 4
+m 1 5
+s 1 5
+6
+20
+4
+17*/
+
 #include <iostream>
 #include <algorithm>
 #include <vector>
-#include <exception>
-#include <iterator>
 
-const int INF = INT_MIN;
+enum STOrder
+{
+	MAX,
+	MIN
+};
 
+template <typename T>
 class SegmentTree
 {
-private:
-    int last_; // размер
-    std::vector<int> builder_; // то, где поддерживаем rmq
-    std::vector<int> constructor_; // первоначальный вектор
+ private:
+	size_t last_; // размер
+	std::vector<T> builder_; // то, где поддерживаем rmq
+	std::vector<T> constructor_; // первоначальный вектор
+	STOrder order_;
 
-    int left(int _p) { return _p << 1; } // левая ветвь
-    int right(int _p) { return (_p << 1) + 1; }  // правая ветвь
+	static T left(int _p) { return _p << 1; } // левая ветвь
+	static T right(int _p) { return (_p << 1) + 1; }  // правая ветвь
 
-    /**
-    Построение дерева отрезков (сегментов).
-    @param _p - текущее значение,
-    @param _l - текущий индекс влево,
-    @param _r - текущий индекс вправо
-    */
+	/**
+	Построение дерева отрезков (сегментов).
+	@param _p - текущее значение,
+	@param _l - текущий индекс влево,
+	@param _r - текущий индекс вправо
+	*/
 
-    void build (int _p, int _l, int _r)
-    {
-        if (_l == _r)
-            builder_[_p] = _l; // дошли до листа
-        else
-        {
-            build(left(_p), _l, (_l + _r) / 2); // строим левую ветвь
-            build(right(_p), (_l + _r) / 2 + 1, _r); // строим правую ветвь
+	void build (T _p, size_t _l, size_t _r)
+	{
+		if (_l == _r)
+			builder_[_p] = _l; // дошли до листа
+		else
+		{
+			build(left(_p), _l, (_l + _r) / 2); // строим левую ветвь
+			build(right(_p), (_l + _r) / 2 + 1, _r); // строим правую ветвь
 
-            int p1 = builder_[left(_p)], p2 = builder_[right(_p)]; // считаем rmq для права и лева
-            builder_[_p] = (constructor_[p1] >= constructor_[p2] ? p1 : p2); // выбираем наибольший результат
-        }
-    }
+			// считаем rmq для права и лева
+			const T p1 = builder_[left(_p)];
+			const T p2 = builder_[right(_p)];
 
-    /**
-    Нахождение rmq (range minimum query).
-    @param _p - текущее значение,
-    @param _l - текущий индекс влево,
-    @param _r - текущий индекс вправо,
-    @return rmq(_i, _j) в ЧАСТИ дерева
-    */
+			// выбираем лучший результат
+			if (order_ == MAX)
+				builder_[_p] = (constructor_[p1] >= constructor_[p2] ? p1 : p2);
+			else
+				builder_[_p] = (constructor_[p1] <= constructor_[p2] ? p1 : p2);
+		}
+	}
 
-    int rmq (int _p, int _l, int _r, int _i, int _j)
-    {
-        if (_i > _r || _j < _l)  // Если вышли за границу
-            throw std::range_error("Index out of range");
+	/**
+	Нахождение rmq (range maximum query).
+	@param _p - текущее значение,
+	@param _l - текущий индекс влево,
+	@param _r - текущий индекс вправо,
+	@return rmq(_i, _j) в ЧАСТИ дерева
+	*/
 
-        else if (_l >= _i && _r <= _j) // Если попали
-            return builder_[_p];
+	T rmq (T _p, size_t _l, size_t _r, size_t _i, size_t _j)
+	{
+		if (_i > _r || _j < _l)  // если вышли за границу
+			return -1;
 
-        int p1 = 0, p2 = 0;
+		else if (_l >= _i && _r <= _j) // если попали
+			return builder_[_p];
 
-        try { p1 = rmq(left(_p), _l, (_l + _r) / 2, _i, _j); } // находим rmq справа
-        catch (std::range_error& e)
-        {
-            p2 = rmq(right(_p), (_l + _r) / 2 + 1, _r, _i, _j);
-            return p2;
-        }
+		// считаем rmq справа и слева
+		const T p1 = rmq(left(_p), _l, (_l + _r) / 2, _i, _j);
+		const T p2 = rmq(right(_p), (_l + _r) / 2 + 1, _r, _i, _j);
 
-        try { p2 = rmq(right(_p), (_l + _r) / 2 + 1, _r, _i, _j); } // находим rmq справа
-        catch (std::range_error& e) { return p1; }
+		if (p1 == -1) return p2;
+		if (p2 == -1) return p1;
 
-        return (constructor_[p1] >= constructor_[p2] ? p1 : p2);
-    }
+		// выбираем лучший результат
+		if (order_ == MAX)
+			return (constructor_[p1] >= constructor_[p2] ? p1 : p2);
+		else
+			return (constructor_[p1] <= constructor_[p2] ? p1 : p2);
+	}
 
-public:
+ public:
 
-    /**
-    Конструктор для дерева отрезков.
-    @param _vec - вектор, для которого нужно найти rmq
-    */
+	/**
+	Конструктор для дерева отрезков.
+	@param _vec - вектор, для которого нужно найти rmq
+	*/
 
-    explicit SegmentTree(const std::vector<int>& _vec)
-    {
-        constructor_ = _vec;
-        last_ = _vec.size();
+	explicit SegmentTree(const std::vector<T>& _vec, STOrder _order)
+	{
+		constructor_ = _vec;
+		last_ = _vec.size();
+		order_ = _order;
 
-        builder_.assign(4 * last_, INF);
-        build(1, 0, last_ - 1);
-    }
-    
-    /**
-    Перестройка дерева. 
-    @param _vec - новый вектор
-    */
+		builder_.assign(4 * last_, 0);
+		build(1, 0, last_ - 1);
+	}
 
-    void rebuild (const std::vector<int>& _vec)
-    {
-        constructor_ = _vec;
-        last_ = _vec.size();
+	/**
+	Перестройка дерева.
+	@param _vec - новый вектор
+	*/
 
-        builder_.assign(4 * last_, INF);
-        build(1, 0, last_ - 1);
-    }
+	inline void rebuild (const std::vector<T>& _vec)
+	{
+		constructor_ = _vec;
+		std::for_each(builder_.begin(), builder_.end(), [](T& _elem) { _elem = 0; });
+		build(1, 0, last_ - 1);
+	}
 
-    int rmq (int _i, int _j) { return rmq(1, 0, last_ - 1, _i, _j); } // перегрузка для нахождения
-                                                                          // rmq(_i, _j) для всего дерева
+	inline T rmq (size_t _i, size_t _j) { return rmq(1, 0, last_ - 1, _i, _j); } // перегрузка для нахождения
+	// rmq(_i, _j) для всего дерева
 };
 
 int main()
@@ -107,7 +147,7 @@ int main()
 	int tests = 0;
 	std::scanf("%d", &tests);
 
-	for (int test = 0; test < tests; test++)
+	while (tests--)
 	{
 		int n = 0, m = 0, x = 0, y = 0, t = 0;
 		char act = 0;
@@ -122,7 +162,7 @@ int main()
 			pref[i] = pn[i] + (i > 0 ? pref[i - 1] : 0);
 		}
 
-		SegmentTree tree(pn);
+		SegmentTree tree(pn, MAX);
 
 		for (int i = 0; i < m; i++)
 		{
@@ -131,22 +171,22 @@ int main()
 
 			switch (act)
 			{
-            case 'm':
-                std::printf("%d\n", pn[tree.rmq(x, y + 1)]);
-                break;
-            case 's':
-                std::printf("%llu\n", pref[y] - (x > 0 ? pref[x - 1] : 0));
-                break;
-            default:
-                std::scanf("%d", &t);
+			case 'm':
+				std::printf("%d\n", pn[tree.rmq(x, y + 1)]);
+				break;
+			case 's':
+				std::printf("%llu\n", pref[y] - (x > 0 ? pref[x - 1] : 0));
+				break;
+			default:
+				std::scanf("%d", &t);
 
-				for(int ptr = x; ptr <= y; ptr++)
+				for (int ptr = x; ptr <= y; ptr++)
 					pn[ptr] = std::min(pn[ptr], t);
 
 				for (int q = x; q < n; q++)
 					pref[q] = pn[q] + (q > 0 ? pref[q - 1] : 0);
-					
-                tree.rebuild(pn);
+
+				tree.rebuild(pn);
 			}
 		}
 	}
