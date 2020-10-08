@@ -48,8 +48,8 @@ class SegmentTree
 	std::vector<T> constructor_; // первоначальный вектор
 	STOrder order_;
 
-	static T left(int _p) { return _p << 1; } // левая ветвь
-	static T right(int _p) { return (_p << 1) + 1; }  // правая ветвь
+	static T left(T _p) { return _p << 1; } // левая ветвь
+	static T right(T _p) { return (_p << 1) + 1; }  // правая ветвь
 
 	/**
 	Построение дерева отрезков (сегментов).
