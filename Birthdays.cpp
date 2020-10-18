@@ -84,10 +84,10 @@ int main ()
         dates.insert(i.date);
     }
  
-    printf("%d\n", ans.size());
+    std::printf("%d\n", ans.size());
  
     for (auto i : ans)
-        puts(i.c_str());
+        std::puts(i.c_str());
  
     return 0;
 }
