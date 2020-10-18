@@ -79,11 +79,10 @@ input.txt output.txt
 
 #include <iostream>
 #include <vector>
-using namespace std;
 
 const int DEL = 1e9 + 9;
 
-uint64_t rec (const vector<pair<int, int>>& act, const vector<string>& moves, int ind, uint64_t val)
+uint64_t rec (const std::vector<std::pair<int, int>>& act, const std::vector<std::string>& moves, int ind, uint64_t val)
 {
 	if (moves[ind] == "x")
 		return val % DEL;
@@ -95,29 +94,29 @@ uint64_t rec (const vector<pair<int, int>>& act, const vector<string>& moves, in
 		return (rec(act, moves, act[ind].first, val) * rec(act, moves, act[ind].second, val)) % DEL;
 
 	else
-		return stoull(moves[ind]) % DEL;
+		return std::stoull(moves[ind]) % DEL;
 }
 
 int main()
 {
-	ios_base::sync_with_stdio(false);
-	cin.tie(nullptr);
-	cout.tie(nullptr);
+	std::ios_base::sync_with_stdio(false);
+	std::cin.tie(nullptr);
+	std::cout.tie(nullptr);
 
 	int n, m, q;
-	cin >> n >> m >> q;
+	std::cin >> n >> m >> q;
 
-	vector<string> moves(n);
+	std::vector<std::string> moves(n);
 
 	for (auto& mo : moves)
-		cin >> mo;
+		std::cin >> mo;
 
-	vector<pair<int, int>> act(n, make_pair(-1, -1));
+	std::vector<std::pair<int, int>> act(n, std::make_pair(-1, -1));
 
 	while (m--)
 	{
-		pair<int, int> p;
-		cin >> p.first >> p.second;
+		std::pair<int, int> p;
+		std::cin >> p.first >> p.second;
 
 		if (act[p.second - 1].first == -1)
 			act[p.second - 1].first = p.first - 1;
@@ -126,14 +125,14 @@ int main()
 	}
 
 	if (q == 0)
-		cout << rec(act, moves, 0, 0) << '\n';
+		std::cout << rec(act, moves, 0, 0) << '\n';
 	else
 	{
 		while (q--)
 		{
 			uint64_t elem;
-			cin >> elem;
-			cout << rec(act, moves, 0, elem) << '\n';
+			std::cin >> elem;
+			std::cout << rec(act, moves, 0, elem) << '\n';
 		}
 	}
 
