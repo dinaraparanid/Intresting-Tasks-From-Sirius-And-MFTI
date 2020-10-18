@@ -52,40 +52,36 @@ Snotra*/
 #include <vector>
 #include <set>
 #include <string>
-using namespace std;
  
 struct guy
 {
     int like;
-    pair<int, int> date;
-    string name;
+    std::pair<int, int> date;
+    std::string name;
 };
  
 int main ()
 {
     int n;
-    scanf("%d", &n);
+    std::scanf("%d", &n);
     char h;
  
-    vector<guy> guys(n);
+    std::vector<guy> guys(n);
  
     for (auto& e : guys)
-        cin >> e.name >> e.like >> e.date.first >> h >> e.date.second;
+        std::cin >> e.name >> e.like >> e.date.first >> h >> e.date.second;
  
-    /*for (auto i : guys)
-        printf("%s", i.name.c_str());*/
+    std::sort(guys.rbegin(), guys.rend(), [](guy& a, guy& b) { return a.like < b.like; });
  
-    sort(guys.rbegin(), guys.rend(), [](guy& a, guy& b) { return a.like < b.like; });
+    std::set<std::pair<int, int>> dates;
+    std::set<std::string> ans;
  
-    set<pair<int, int>> dates;
-    set<string> ans;
- 
-    for (int i = 0; i < n; i++)
+    for (auto i : guys)
     {
-        if (dates.find(guys[i].date) == dates.end())
-            ans.insert(guys[i].name);
+        if (dates.find(i.date) == dates.end())
+            ans.insert(i.name);
  
-        dates.insert(guys[i].date);
+        dates.insert(i.date);
     }
  
     printf("%d\n", ans.size());
