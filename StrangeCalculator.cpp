@@ -81,19 +81,21 @@ input.txt output.txt
 #include <vector>
 using namespace std;
 
+const int DEL = 1e9 + 9;
+
 uint64_t rec (const vector<pair<int, int>>& act, const vector<string>& moves, int ind, uint64_t val)
 {
-	 if (moves[ind] == "x")
-		 return val % 1000000009;
+	if (moves[ind] == "x")
+		return val % DEL;
 
 	else if (moves[ind] == "+")
-		return (rec(act, moves, act[ind].first, val) + rec(act, moves, act[ind].second, val)) % 1000000009;
+		return (rec(act, moves, act[ind].first, val) + rec(act, moves, act[ind].second, val)) % DEL;
 
 	else if (moves[ind] == "*")
-		return (rec(act, moves, act[ind].first, val) * rec(act, moves, act[ind].second, val)) % 1000000009;
+		return (rec(act, moves, act[ind].first, val) * rec(act, moves, act[ind].second, val)) % DEL;
 
 	else
-		return stoull(moves[ind]) % 1000000009;
+		return stoull(moves[ind]) % DEL;
 }
 
 int main()
