@@ -79,22 +79,23 @@ input.txt output.txt
 
 #include <iostream>
 #include <vector>
+#include <string>
 
-const int DEL = 1e9 + 9;
+constexpr int del = 1e9 + 9;
 
-uint64_t rec (const std::vector<std::pair<int, int>>& act, const std::vector<std::string>& moves, int ind, uint64_t val)
+uint64_t rec(const std::vector<std::pair<int, int>>& act, const std::vector<std::string>& moves, const int ind, const uint64_t val)
 {
 	if (moves[ind] == "x")
-		return val % DEL;
+		return val % del;
 
 	else if (moves[ind] == "+")
-		return (rec(act, moves, act[ind].first, val) + rec(act, moves, act[ind].second, val)) % DEL;
+		return (rec(act, moves, act[ind].first, val) + rec(act, moves, act[ind].second, val)) % del;
 
 	else if (moves[ind] == "*")
-		return (rec(act, moves, act[ind].first, val) * rec(act, moves, act[ind].second, val)) % DEL;
+		return (rec(act, moves, act[ind].first, val) * rec(act, moves, act[ind].second, val)) % del;
 
 	else
-		return std::stoull(moves[ind]) % DEL;
+		return std::stoull(moves[ind]) % del;
 }
 
 int main()
@@ -103,7 +104,7 @@ int main()
 	std::cin.tie(nullptr);
 	std::cout.tie(nullptr);
 
-	int n, m, q;
+	int n = 0, m = 0, q = 0;
 	std::cin >> n >> m >> q;
 
 	std::vector<std::string> moves(n);
@@ -130,7 +131,7 @@ int main()
 	{
 		while (q--)
 		{
-			uint64_t elem;
+			uint64_t elem = 0;
 			std::cin >> elem;
 			std::cout << rec(act, moves, 0, elem) << '\n';
 		}
