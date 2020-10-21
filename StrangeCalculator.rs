@@ -82,8 +82,8 @@ use std::io;
 const DEL: u128 = 1000000009;
 
 fn rec (act: &Vec<(usize, usize)>, moves: &Vec<String>, ind: usize, val: u128) -> u128 {
-    unsafe {
-        return match moves.get_unchecked(ind).as_str() {
+    return unsafe {
+        match moves.get_unchecked(ind).as_str() {
             "x" => val,
 
             "+" => (rec(act, moves, act.get_unchecked(ind).0, val) +
