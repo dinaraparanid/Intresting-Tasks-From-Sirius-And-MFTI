@@ -45,7 +45,7 @@ int main()
 		for (int q = 0; q < m; q++)
 			std::scanf("%d", &matrix[i][q]);
 
-	auto squere = static_cast<std::pair<int, std::pair<int, int>>**>(std::malloc(n * sizeof(std::pair<int, std::pair<int, int>>*)));
+	auto** squere = static_cast<std::pair<int, std::pair<int, int>>**>(std::malloc(n * sizeof(std::pair<int, std::pair<int, int>>*)));
 	for (int i = 0; i < n; i++)
 		squere[i] = static_cast<std::pair<int, std::pair<int, int>>*>(std::malloc(m * sizeof(std::pair<int, std::pair<int, int>>)));
 
