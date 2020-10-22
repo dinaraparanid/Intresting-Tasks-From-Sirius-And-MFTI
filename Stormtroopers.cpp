@@ -45,13 +45,13 @@ int main()
 		for (int q = 0; q < m; q++)
 			std::scanf("%d", &matrix[i][q]);
 
-	auto** squere = static_cast<std::pair<int, std::pair<int, int>>**>(std::malloc(n * sizeof(std::pair<int, std::pair<int, int>>*)));
+	auto** square = static_cast<std::pair<int, std::pair<int, int>>**>(std::malloc(n * sizeof(std::pair<int, std::pair<int, int>>*)));
 	for (int i = 0; i < n; i++)
-		squere[i] = static_cast<std::pair<int, std::pair<int, int>>*>(std::malloc(m * sizeof(std::pair<int, std::pair<int, int>>)));
+		square[i] = static_cast<std::pair<int, std::pair<int, int>>*>(std::malloc(m * sizeof(std::pair<int, std::pair<int, int>>)));
 
 	for (int i = 0; i < n; i++)
 		for (int q = 0; q < m; q++)
-			squere[i][q].first = 0;
+			square[i][q].first = 0;
 
 	std::multimap<int, std::pair<int, int>> ones;
 
@@ -64,7 +64,7 @@ int main()
 				int r = 1;
 
 				if (q != 0 && matrix[i][q - 1] == 1)
-					r = squere[i][q - 1].second.first - 1;
+					r = square[i][q - 1].second.first - 1;
 				else
 					while (q + r < m && matrix[i][q + r] == 1)
 						r++;
@@ -72,16 +72,16 @@ int main()
 				int d = 1;
 
 				if (i != 0 && matrix[i - 1][q] == 1)
-					d = squere[i - 1][q].second.second - 1;
+					d = square[i - 1][q].second.second - 1;
 				else
 					while (i + d < n && matrix[i + d][q] == 1)
 						d++;
 
-				squere[i][q].first = r < d ? r : d;
-				squere[i][q].second.first = r;
-				squere[i][q].second.second = d;
+				square[i][q].first = r < d ? r : d;
+				square[i][q].second.first = r;
+				square[i][q].second.second = d;
 				
-				ones.insert(std::make_pair(squere[i][q].first, std::make_pair(i, q)));
+				ones.insert(std::make_pair(square[i][q].first, std::make_pair(i, q)));
 			}
 		}
 	}
@@ -100,7 +100,7 @@ int main()
 
 		for (int c = 1; c < cnt; c++)
 		{
-			if (squere[i + c][q + c].first < squere[i][q].first - c)
+			if (square[i + c][q + c].first < square[i][q].first - c)
 			{
 				cnt = c;
 				break;
