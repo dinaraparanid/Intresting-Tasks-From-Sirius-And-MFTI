@@ -45,9 +45,10 @@
 use std::fmt::Debug;
 use std::io;
 use std::num::ParseIntError;
-use std::str::FromStr;
+use std::str::{FromStr, SplitAsciiWhitespace};
 
 #[inline]
+#[allow(dead_code)]
 fn input<T: FromStr<Err = ParseIntError> + Debug>() -> T {
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
@@ -55,6 +56,7 @@ fn input<T: FromStr<Err = ParseIntError> + Debug>() -> T {
 }
 
 #[inline]
+#[allow(dead_code)]
 fn input_vec<T: FromStr<Err = ParseIntError> + Debug>() -> Vec<T> {
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
@@ -65,7 +67,12 @@ fn input_vec<T: FromStr<Err = ParseIntError> + Debug>() -> Vec<T> {
 }
 
 #[inline]
-fn input_pair<T: FromStr<Err = ParseIntError> + Debug>() -> (T, T) {
+#[allow(dead_code)]
+fn input_pair<F, S>() -> (F, S)
+where
+    F: FromStr<Err = ParseIntError> + Debug,
+    S: FromStr<Err = ParseIntError> + Debug,
+{
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
 
@@ -76,11 +83,18 @@ fn input_pair<T: FromStr<Err = ParseIntError> + Debug>() -> (T, T) {
     )
 }
 
+#[inline]
+#[allow(dead_code)]
+fn input_it(mut input: &mut String) -> SplitAsciiWhitespace<'_> {
+    io::stdin().read_line(&mut input).unwrap();
+    input.split_ascii_whitespace()
+}
+
 fn main() {
     let t = input::<i32>();
 
     for _ in 0..t {
-        let (n, m) = input_pair::<usize>();
+        let (n, m) = input_pair::<usize, usize>();
         let mut vec = vec![vec![0; m]; n];
 
         for i in &mut vec {
