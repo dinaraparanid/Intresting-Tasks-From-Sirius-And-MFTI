@@ -15,7 +15,7 @@
 2 2
 
 2
-
+*/
 use std::fmt::Debug;
 use std::io;
 use std::iter::FromIterator;
@@ -100,4 +100,3 @@ fn main() {
 
     print!("{}", ans);
 }
-*/
